@@ -1,0 +1,70 @@
+#!/bin/bash
+
+# Valores por defecto
+tipo=""
+solo_actual=false
+salida=""
+regex=""
+dir="." #Por defecto busca en la ruta actual si no ingresa una direccion
+
+#(Despues se actualiza para incorporar las siguientes opciones de los compas)
+while [[ $# -gt 0 ]]; do
+    case "$1" in
+        -t)
+            shift #Mueve argumentos una posicion a la izquierda 
+            if [[ "$1" == "f" || "$1" == "d" ]]; then
+                tipo="$1"
+            else
+                echo "Error: Tipo inválido. Usar 'f' para ficheros o 'd' para directorios."
+                exit 1
+            fi
+            ;;
+        -x)
+            solo_actual=true
+            ;;
+        -o)
+            shift
+            salida="$1"
+            ;;
+       /*)
+           shift
+           dir="$1"
+           ;;
+        *)
+            regex="$1"
+            ;;
+ esac
+    shift
+done
+
+# Despliega las ayudas
+if [[ -z "$regex" ]]; then
+    echo "1: -t (f,d) para buscar archivos o directorios"
+    echo "2: -x Limitar la busqueda en la direccion actual"
+    echo "3: -o El resultado salga en un archivo directamente"
+    exit 1
+fi
+
+# Construcción del comando find
+depth_opt=""
+type_opt=""
+
+if $solo_actual; then  #Si quiero un limite en la busqueda
+    depth_opt="-maxdepth 1"  #Declaro la profundidad de busqueda. Con esto le digo que nomas se fije en el directorio que esta parado
+fi
+
+if [[ "$tipo" == "f" ]]; then
+    type_opt="-type f"
+elif [[ "$tipo" == "d" ]]; then
+    type_opt="-type d"
+fi
+
+# Se ejecuta la busqueda, dependiendo si  se desea crear un archivo para guardar la salida
+# En este caso, se deberia ampliar con las otras opciones que estan haciendo mis compañeros. Ahora nomas funciona con las mias
+if [[ -n "$salida" ]]; then
+    find "$dir" $depth_opt $type_opt -regex ".*/$regex" > "$salida"
+else
+    find "$dir" $depth_opt $type_opt -regex ".*/$regex"
+fi
+
+
