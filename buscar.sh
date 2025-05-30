@@ -1,109 +1,126 @@
 #!/bin/bash
 
-#funcion de utilidad
-
-function ayuda(){
-    echo "1: -t (f,d) para buscar archivos o directorios"
-    echo "2: -x Limitar la busqueda en la direccion actual"
-    echo "3: -o El resultado salga en un archivo directamente"
-    exit 1  
+# Función de ayuda
+function ayuda() {
+    echo "Uso: $0 <ruta> [opciones]"
+    echo "Opciones:"
+    echo "  -t (f|d)     Buscar archivos (f) o directorios (d)"
+    echo "  -x          Limitar la búsqueda al sistema de archivos actual"
+    echo "  -o <archivo> Guardar salida en un archivo"
+    echo "  -r <regex>   Filtrar salida usando expresión regular"
+    echo "  -d <n>       Buscar archivos modificados hace más de n días"
+    echo "  -m <n>       Buscar archivos modificados hace más de n meses"
+    echo "  -a <n>       Buscar archivos modificados hace más de n años"
+    exit 1
 }
 
+# Función auxiliar para verificar argumentos requeridos
 function cortarFaltaOpcion() {
     if [[ -z "$1" ]]; then
         echo "Falta el parámetro para $2"
         ayuda
-        exit 1
     fi
 }
 
-# agregamos las partes del comando
-
-tiempo=0;
-usaTiempo=false;
-
+# Variables de control
+tiempo=0
+usaTiempo=false
 usaDev=false
-
 usaType=false
-
 usaRegex=false
-
 usaSalida=false
 
-if [[ $# -ge 1 ]]; then
-    # esto obliga a tener si o si 1 parametros (la ruta, una opcion y un valor)
+# Validar mínimo 1 parámetro (ruta)
+if [[ $# -lt 1 ]]; then
+    ayuda
+fi
 
-        if [[ -e "$1" ]]; then
-            for ((i=2; i<=$#; i+=2)); do
-                opcion="${!i}"              # accede al argumento en la posición i
-                indice=$((i + 1))
-                siguiente="${!indice}"     # accede a la opcion
+ruta="$1"
 
-                case "$opcion" in
-                    "-d")
-                        cortarFaltaOpcion "$siguiente" "la opción de -d"
-                        usaTiempo=true;
-                        dias=$((siguiente));
-                        tiempo=$((tiempo+dias))
-                    ;;
-                    "-m")
-                        cortarFaltaOpcion "$siguiente" "la opción de -m"
-                        usaTiempo=true;
-                        dias=$((30*siguiente));
-                        tiempo=$((tiempo+dias))
-                    ;;
-                    "-a")
-                        cortarFaltaOpcion "$siguiente" "la opción de -a"
-                        usaTiempo=true;
-                        dias=$((365*siguiente));
-                        tiempo=$((tiempo+dias))
-                    ;;
-                    "-t")
-                        cortarFaltaOpcion "$siguiente" "la opción de -t"
-                        if [[ "$siguiente" == "f" || "$siguiente" == "d" ]]; then
-                            usaType=true
-                            tipo="$siguiente"
-                        else
-                            echo "Error: Tipo inválido. Usar 'f' para ficheros o 'd' para directorios."
-                            exit 1
-                        fi
-                    ;;
-                    "-R")
-                        usaDev=true
-                    ;;
-                    "-O")
-                        cortarFaltaOpcion "$siguiente" "la opción de -o"
-                        usaSalida=true;
-                        salida="$siguiente";
-                    ;;
-                    *) 
-                        ayuda
-                        exit 1
-                     ;;
-                esac
-            done
+if [[ ! -e "$ruta" ]]; then
+    echo "Ruta no válida: $ruta"
+    exit 1
+fi
 
-            if ("$usaTiempo"); then
-                time="-mtime +$tiempo ";
+# Parseo de opciones
+shift # quitar la ruta del primer argumento
+
+while [[ $# -gt 0 ]]; do
+    case "$1" in
+        -d)
+            cortarFaltaOpcion "$2" "-d"
+            usaTiempo=true
+            tiempo=$((tiempo + $2))
+            shift 2
+            ;;
+        -m)
+            cortarFaltaOpcion "$2" "-m"
+            usaTiempo=true
+            tiempo=$((tiempo + 30 * $2))
+            shift 2
+            ;;
+        -a)
+            cortarFaltaOpcion "$2" "-a"
+            usaTiempo=true
+            tiempo=$((tiempo + 365 * $2))
+            shift 2
+            ;;
+        -t)
+            cortarFaltaOpcion "$2" "-t"
+            if [[ "$2" == "f" || "$2" == "d" ]]; then
+                usaType=true
+                tipo="$2"
             else
-                time="";
+                echo "Error: Tipo inválido. Usar 'f' para ficheros o 'd' para directorios."
+                exit 1
             fi
+            shift 2
+            ;;
+        -x)
+            usaDev=true
+            shift
+            ;;
+        -o)
+            cortarFaltaOpcion "$2" "-o"
+            usaSalida=true
+            salida="$2"
+            shift 2
+            ;;
+        -r)
+            cortarFaltaOpcion "$2" "-r"
+            usaRegex=true
+            regex="$2"
+            shift 2
+            ;;
+        *)
+            echo "Opción inválida: $1"
+            ayuda
+            ;;
+    esac
+done
 
-            if ("$usaType"); then
-                tipo="-type $tipo ";
-            else
-                tipo="";
-            fi
+# Armar partes del comando
+comando="find \"$ruta\""
 
-            if ("$usaDev"); then
-                solo_actual="-xdev "
-            else
-                solo_actual="";
-            fi
+if $usaType; then
+    comando+=" -type $tipo"
+fi
 
+if $usaDev; then
+    comando+=" -xdev"
+fi
 
-            # armamos la ejecucion
-            echo "find $1 $tipo $solo_actual $time";
-            
-        fi
+if $usaTiempo; then
+    comando+=" -mtime +$tiempo"
+fi
+
+# Ejecutar comando
+if $usaRegex; then
+    comando+=" | grep -E \"$regex\""
+fi
+
+if $usaSalida; then
+    eval "$comando" > "$salida"
+else
+    eval "$comando"
 fi
