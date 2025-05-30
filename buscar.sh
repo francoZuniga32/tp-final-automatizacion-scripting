@@ -11,6 +11,8 @@ function ayuda() {
     echo "  -d <n>       Buscar archivos modificados hace más de n días"
     echo "  -m <n>       Buscar archivos modificados hace más de n meses"
     echo "  -a <n>       Buscar archivos modificados hace más de n años"
+    echo " -u <usuario>  Buscar archivos por usuario"
+    echo " -g <grupo>    Buscar archivos por grupo"
     exit 1
 }
 
@@ -29,6 +31,8 @@ usaDev=false
 usaType=false
 usaRegex=false
 usaSalida=false
+usaUsuario=false
+usaGrupo=false
 
 # Validar mínimo 1 parámetro (ruta)
 if [[ $# -lt 1 ]]; then
@@ -92,6 +96,27 @@ while [[ $# -gt 0 ]]; do
             regex="$2"
             shift 2
             ;;
+        -u)
+	    	cortarFaltaOpcion "$2" "-u"
+	    	usaUsuario=true
+		    usuario="$2"
+            shift 2
+	    	;;
+
+	    -g)
+		    cortarFaltaOpcion "$2" "-u"
+		    usaGrupo=true
+		    grupo="$2"
+            shift 2
+		    ;;
+    
+	    -e)
+		    cortarFaltaOpcion "$2" "-e"
+	    	usaExpresionRegular=true
+		    expresionRegular="$2"
+		    shift 2
+            ;;
+            
         *)
             echo "Opción inválida: $1"
             ayuda
@@ -112,6 +137,14 @@ fi
 
 if $usaTiempo; then
     comando+=" -mtime +$tiempo"
+fi
+
+if $usaUsuario; then
+    comando+= " -user $usuario"    
+fi
+
+if $usaGrupo; then
+    comando+= " -group $grupo"
 fi
 
 # Ejecutar comando
