@@ -29,6 +29,7 @@ usaDev=false
 usaType=false
 usaRegex=false
 usaSalida=false
+usaNivel=false
 
 # Validar mínimo 1 parámetro (ruta)
 if [[ $# -lt 1 ]]; then
@@ -45,7 +46,7 @@ fi
 # Parseo de opciones
 shift # quitar la ruta del primer argumento
 
-while [[ $# -gt 0 ]]; do
+for (( ; $# >= 2; )); do 
     case "$1" in
         -d)
             cortarFaltaOpcion "$2" "-d"
@@ -76,6 +77,12 @@ while [[ $# -gt 0 ]]; do
             fi
             shift 2
             ;;
+        -n)
+            cortarFaltaOpcion "$2" "-n"
+            usaNivel=true
+            nivel=$2
+            shift 2
+        ;;
         -x)
             usaDev=true
             shift
@@ -86,7 +93,8 @@ while [[ $# -gt 0 ]]; do
             salida="$2"
             shift 2
             ;;
-        -r)
+        -e)
+            # re robe esta opcion julian perdon 
             cortarFaltaOpcion "$2" "-r"
             usaRegex=true
             regex="$2"
@@ -106,17 +114,24 @@ if $usaType; then
     comando+=" -type $tipo"
 fi
 
+if $usaNivel; then
+    comando+=" -maxdepth $nivel"
+fi
+
 if $usaDev; then
     comando+=" -xdev"
 fi
 
 if $usaTiempo; then
-    comando+=" -mtime +$tiempo"
+    comando+=" -mtime $tiempo"
 fi
+
+
+comando+=" -exec ls -l {} \; "
 
 # Ejecutar comando
 if $usaRegex; then
-    comando+=" | grep -E \"$regex\""
+    comando+=" | grep -E \"$regex\b\""
 fi
 
 if $usaSalida; then
