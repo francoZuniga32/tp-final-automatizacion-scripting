@@ -154,11 +154,11 @@ fi
 
 comando+=" -exec ls -l {} \; "
 if $usaUsuario; then
-    comando+= " -user $usuario"    
+    comando+=" -user $usuario"    
 fi
 
 if $usaGrupo; then
-    comando+= " -group $grupo"
+    comando+=" -group $grupo"
 fi
 
 # Ejecutar comando
