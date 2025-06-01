@@ -100,7 +100,7 @@ for (( ; $# >= 2; )); do
             shift 2
             ;;
         -e)
-            # re robe esta opcion julian perdon 
+            # re robe esta opcion julian perdon, le dejamos r o e? xd 
             cortarFaltaOpcion "$2" "-r"
             usaRegex=true
             regex="$2"
