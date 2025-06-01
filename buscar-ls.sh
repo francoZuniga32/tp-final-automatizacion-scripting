@@ -11,8 +11,9 @@ function ayuda() {
     echo "  -d <n>       Buscar archivos modificados hace más de n días"
     echo "  -m <n>       Buscar archivos modificados hace más de n meses"
     echo "  -a <n>       Buscar archivos modificados hace más de n años"
-    echo " -u <usuario>  Buscar archivos por usuario"
-    echo " -g <grupo>    Buscar archivos por grupo"
+    echo " -u <usuario>  Buscar archivos por usuario o ID de usuario"
+    echo " -g <grupo>    Buscar archivos por grupo o ID de grupo"
+    echo " -e <tipo de archivo>	Buscar archivos por terminacion de archivo (por ejemplo .jpg)"
     exit 1
 }
 
@@ -34,6 +35,7 @@ usaSalida=false
 usaNivel=false
 usaUsuario=false
 usaGrupo=false
+usaRegex=false
 
 # Validar mínimo 1 parámetro (ruta)
 if [[ $# -lt 1 ]]; then
