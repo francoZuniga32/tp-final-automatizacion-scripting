@@ -7,7 +7,6 @@ function ayuda() {
     echo "  -t (f|d)     Buscar archivos (f) o directorios (d)"
     echo "  -x          Limitar la búsqueda al sistema de archivos actual"
     echo "  -o <archivo> Guardar salida en un archivo"
-    echo "  -r <regex>   Filtrar salida usando expresión regular"
     echo "  -d <n>       Buscar archivos modificados hace más de n días"
     echo "  -m <n>       Buscar archivos modificados hace más de n meses"
     echo "  -a <n>       Buscar archivos modificados hace más de n años"
@@ -101,9 +100,9 @@ for (( ; $# >= 2; )); do
             ;;
         -e)
             # re robe esta opcion julian perdon, le dejamos r o e? xd 
-            cortarFaltaOpcion "$2" "-r"
+            cortarFaltaOpcion "$2" "-e"
             usaRegex=true
-            regex="$2"
+            regex="$2$"
             shift 2
             ;;
         -u)
@@ -119,13 +118,6 @@ for (( ; $# >= 2; )); do
 		    grupo="$2"
             shift 2
 		    ;;
-    
-	    -e)
-		    cortarFaltaOpcion "$2" "-e"
-	    	usaExpresionRegular=true
-		    expresionRegular="$2"
-		    shift 2
-            ;;
             
         *)
             echo "Opción inválida: $1"
