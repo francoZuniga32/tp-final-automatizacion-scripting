@@ -10,9 +10,17 @@ function ayuda() {
     echo "  -d <n>       Buscar archivos modificados hace más de n días"
     echo "  -m <n>       Buscar archivos modificados hace más de n meses"
     echo "  -a <n>       Buscar archivos modificados hace más de n años"
-    echo " -u <usuario>  Buscar archivos por usuario o ID de usuario"
-    echo " -g <grupo>    Buscar archivos por grupo o ID de grupo"
-    echo " -e <tipo de archivo>	Buscar archivos por extencion de archivo (por ejemplo .jpg)"
+    echo "  -u <usuario>  Buscar archivos por usuario o ID de usuario"
+    echo "  -g <grupo>    Buscar archivos por grupo o ID de grupo"
+    echo "  -e <tipo de archivo>	Buscar archivos por extencion de archivo (por ejemplo .jpg)"
+    echo "  -h imprime la ayuda"
+    echo "---"
+    echo "  -modificacionfechainicio yyyymmdd  Busca archivos que hayan sido modificados desde la fecha ingresada en adelante"
+    echo "  -modificacionfechafinal yyyymmdd   Busca archivos que hayan sido modificados antes de la fecha ingresada"
+    echo "  -altafechainicio yyyymmdd          Busca archivos que hayan sido creados desde la fecha ingresada en adelante"
+    echo "  -altafechafinal yyyymmdd           Busca archivos que hayan sido creados antes de la fecha ingresada"
+    echo "---"
+    echo "Nota: las opciones de modificación y alta son excluyentes entre sí, al igual que las opciones -d, -m y -a. En el caso de estas últimas, el script las ignorará."
     exit 1
 }
 
@@ -76,6 +84,10 @@ if [[ $# -lt 1 ]]; then
 fi
 
 ruta="$1"
+
+if [ "$1" = "-h" ]; then
+    ayuda
+fi
 
 if [[ ! -e "$ruta" ]]; then
     echo "Ruta no válida: $ruta"
