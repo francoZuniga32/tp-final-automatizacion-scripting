@@ -266,7 +266,7 @@ if $usaEjecucion; then
     comando+=" -executable"
 fi
 
-comando+=" -exec ls -l {} \; "
+comando+=" -exec ls -ld {} \; "
 if $usaUsuario; then
     comando+=" -user $usuario"    
 fi
