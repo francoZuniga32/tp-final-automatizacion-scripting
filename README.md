@@ -18,6 +18,7 @@ buscar-ls.sh recibe los siguientes parametros
 `./buscar-ls.sh <ruta> <opciones>`
 
 Opciones:
+```
   -t (f|d)     Buscar archivos (f) o directorios (d)
   -x          Limitar la búsqueda al sistema de archivos actual
   -o <archivo> Guardar salida en un archivo
@@ -32,5 +33,5 @@ Opciones:
   -modificacionfechafinal yyyymmdd   Busca archivos que hayan sido modificados antes de la fecha ingresada
   -altafechainicio yyyymmdd          Busca archivos que hayan sido creados desde la fecha ingresada en adelante
   -altafechafinal yyyymmdd           Busca archivos que hayan sido creados antes de la fecha ingresada
-
+```
 tambien se puede ejecutar `./buscar-ls.sh -h` para obtener un listado de las opciones.
