@@ -28,6 +28,7 @@ Opciones:
   -u <usuario>  Buscar archivos por usuario o ID de usuario
   -g <grupo>    Buscar archivos por grupo o ID de grupo
   -e <tipo de archivo>  Buscar archivos por extencion de archivo (por ejemplo .jpg)
+  -n <n>       Buscar archivos o directorios en n niveles de profundidad
   -h imprime la ayuda
   -modificacionfechainicio yyyymmdd  Busca archivos que hayan sido modificados desde la fecha ingresada en adelante
   -modificacionfechafinal yyyymmdd   Busca archivos que hayan sido modificados antes de la fecha ingresada
